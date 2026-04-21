@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bklynsdon — Creator Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg:#080808; --bg2:#0f0f0f; --bg3:#161616; --bg4:#1e1e1e;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
+  --text:#f0f0f0; --muted:rgba(240,240,240,0.45);
+  --accent:#4d8cff; --accent-dim:rgba(77,140,255,0.14); --accent-glow:rgba(77,140,255,0.28);
+  --green:#53FC18; --green-dim:rgba(83,252,24,0.1);
+  --purple:#9146FF; --red:#FF0000;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
+a{color:inherit;text-decoration:none}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;outline:none}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 48px;background:rgba(8,8,8,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-weight:700;font-size:1.15rem;letter-spacing:-0.02em}.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{color:var(--muted);font-size:0.83rem;transition:color .2s}.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--accent);color:#fff;padding:8px 20px;border-radius:100px;font-size:0.83rem;font-weight:500;transition:opacity .2s,transform .2s}.nav-cta:hover{opacity:.85;transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 32px 80px;position:relative;overflow:hidden}
+.hero-glow{position:absolute;width:900px;height:600px;top:50%;left:50%;transform:translate(-50%,-55%);background:radial-gradient(ellipse,rgba(77,140,255,.13) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:.73rem;font-weight:500;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:28px}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.hero-title{font-size:clamp(4.5rem,12vw,10rem);font-weight:700;letter-spacing:-.04em;line-height:.9}
+.hero-title .blue{color:var(--accent)}
+.hero-sub{margin-top:24px;font-size:clamp(.95rem,1.8vw,1.2rem);color:var(--muted);font-weight:300;max-width:500px;line-height:1.75}
+.hero-actions{margin-top:40px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center}
+.btn-primary{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;padding:13px 30px;border-radius:100px;font-size:.9rem;font-weight:500;transition:opacity .2s,transform .2s,box-shadow .2s;box-shadow:0 0 28px var(--accent-glow)}.btn-primary:hover{opacity:.87;transform:translateY(-2px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:9px;background:transparent;border:1px solid var(--border);color:var(--text);padding:13px 26px;border-radius:100px;font-size:.9rem;transition:border-color .2s,background .2s,transform .2s}.btn-ghost:hover{border-color:var(--border2);background:rgba(255,255,255,.04);transform:translateY(-2px)}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--muted);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}
+.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,var(--muted),transparent);animation:scrollPulse 2s infinite}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 0;overflow:hidden;background:var(--bg2)}
+.ticker-track{display:flex;animation:ticker 30s linear infinite;width:max-content}.ticker-track:hover{animation-play-state:paused}
+.ticker-item{padding:0 44px;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:44px}
+.ticker-item::after{content:'·';color:var(--border);font-size:1.4rem}
+
+/* PLATFORM STATS */
+.stats-section{padding:56px 48px;max-width:1300px;margin:0 auto}
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:32px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s,background .2s,transform .2s}.stat-card:hover{border-color:var(--border2);background:var(--bg3);transform:translateY(-2px)}
+.stat-platform{display:flex;align-items:center;gap:9px}
+.stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-name{font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:600}
+.stat-count{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+.stat-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+/* SECTION HEADERS */
+.section-label{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.section-title{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px}
+.section-desc{color:var(--muted);font-size:.95rem;max-width:440px;line-height:1.7}
+
+/* DASHBOARD GRID */
+.dash-wrap{padding:0 48px 80px;max-width:1300px;margin:0 auto}
+.dash-row{display:grid;gap:16px;margin-bottom:16px}
+.dash-row-2{grid-template-columns:1.4fr 1fr}
+.dash-row-3{grid-template-columns:1fr 1fr 1fr}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.panel-header{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:8px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.panel-action{font-size:.72rem;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 10px;transition:color .2s,border-color .2s;cursor:pointer}.panel-action:hover{color:var(--text);border-color:var(--border2)}
+
+/* AI CHAT */
+.chat-messages{height:320px;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent}
+.chat-msg{display:flex;flex-direction:column;gap:4px;max-width:88%}
+.chat-msg.user{align-self:flex-end;align-items:flex-end}
+.chat-msg.ai{align-self:flex-start}
+.chat-bubble{padding:10px 14px;border-radius:14px;font-size:.85rem;line-height:1.55}
+.chat-msg.user .chat-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.chat-msg.ai .chat-bubble{background:var(--bg3);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.chat-meta{font-size:.68rem;color:var(--muted)}
+.chat-chips{padding:10px 24px;display:flex;gap:7px;flex-wrap:wrap;border-top:1px solid var(--border)}
+.chip{background:var(--bg3);border:1px solid var(--border);border-radius:100px;padding:5px 11px;font-size:.73rem;color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap}.chip:hover{background:var(--accent-dim);border-color:var(--accent);color:var(--text)}
+.chat-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:9px;align-items:center}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:9px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;transition:border-color .2s}.chat-input:focus{border-color:var(--accent)}
+.chat-send{background:var(--accent);color:#fff;border-radius:10px;padding:9px 16px;font-size:.82rem;font-weight:500;transition:opacity .2s}.chat-send:hover{opacity:.85}.chat-send:disabled{opacity:.45}
+.typing{display:flex;gap:4px;align-items:center;padding:10px 14px}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:typing 1.2s infinite}.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+
+/* NEWS */
+.news-list{height:420px;overflow-y:auto;padding:12px 24px;display:flex;flex-direction:column;gap:2px;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent}
+.news-item{padding:12px 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:5px;cursor:pointer;transition:opacity .18s}.news-item:hover{opacity:.8}.news-item:last-child{border-bottom:none}
+.news-headline{font-size:.84rem;font-weight:500;line-height:1.45;color:var(--text)}
+.news-meta{display:flex;align-items:center;gap:9px;font-size:.7rem;color:var(--muted)}
+.news-tag{background:var(--bg4);border-radius:5px;padding:2px 7px;font-size:.65rem;font-weight:600;letter-spacing:.04em}
+
+/* VIDEO */
+.video-card{padding:24px}
+.video-thumb{aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:var(--bg3);border:1px solid var(--border);position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .2s}.video-thumb:hover{border-color:var(--border2)}
+.video-thumb-bg{position:absolute;inset:0;opacity:.05}
+.play-circle{width:64px;height:64px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px var(--accent-glow);transition:transform .2s,box-shadow .2s;z-index:1}.video-thumb:hover .play-circle{transform:scale(1.1);box-shadow:0 0 56px var(--accent-glow)}
+.video-info{margin-top:16px;display:flex;flex-direction:column;gap:4px}
+.video-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600}
+.video-sub{font-size:.78rem;color:var(--muted)}
+
+/* BRANDS */
+.brands-section{padding:0 48px 80px;max-width:1300px;margin:0 auto}
+.brands-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-top:40px}
+.brand-card{background:var(--bg2);padding:36px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;transition:background .2s,transform .2s;cursor:default}.brand-card:hover{background:var(--bg3)}
+.brand-name{font-family:'Space Grotesk',sans-serif;font-size:.88rem;font-weight:600}
+.brand-desc{font-size:.72rem;color:var(--muted);line-height:1.45}
+
+/* NEWSLETTER */
+.nl-section{padding:0 48px 80px;max-width:1300px;margin:0 auto}
+.nl-box{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:56px 56px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;position:relative;overflow:hidden}
+.nl-box::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(83,252,24,.07) 0%,transparent 70%)}
+.nl-form{display:flex;flex-direction:column;gap:10px}
+.nl-input{background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}.nl-input::placeholder{color:var(--muted)}.nl-input:focus{border-color:var(--accent)}
+.nl-btn{background:var(--accent);color:#fff;padding:13px;border-radius:11px;font-size:.9rem;font-weight:500;transition:opacity .2s,transform .2s}.nl-btn:hover{opacity:.85;transform:translateY(-1px)}
+.nl-note{font-size:.7rem;color:var(--muted);text-align:center}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:-.02em}.footer-logo span{color:var(--accent)}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{color:var(--muted);font-size:.78rem;transition:color .2s}.footer-links a:hover{color:var(--text)}
+.footer-copy{font-size:.7rem;color:var(--muted)}
+
+/* TWEAKS */
+#tweaks-panel{display:none;position:fixed;bottom:24px;right:24px;z-index:9999;background:#111;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px 20px;min-width:210px;box-shadow:0 8px 40px rgba(0,0,0,.6);font-size:.8rem;color:var(--muted)}
+#tweaks-panel.open{display:block}
+#tweaks-panel h4{font-family:'Space Grotesk',sans-serif;color:var(--text);font-size:.83rem;margin-bottom:12px}
+.tweak-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.tweak-row label{font-size:.72rem;color:var(--muted)}
+.tweak-row select,.tweak-row input[type=color]{background:#1a1a1a;border:1px solid rgba(255,255,255,.08);color:var(--text);border-radius:7px;padding:5px 9px;font-family:'DM Sans',sans-serif;font-size:.77rem;cursor:pointer;width:100%}
+.tweak-row input[type=color]{height:34px;padding:3px}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes scrollPulse{0%,100%{opacity:.3}50%{opacity:.8}}
+.anim-1{animation:fadeUp .7s ease both}
+.anim-2{animation:fadeUp .7s .1s ease both}
+.anim-3{animation:fadeUp .7s .2s ease both}
+.anim-4{animation:fadeUp .7s .3s ease both}
+
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(3,1fr)}.dash-row-2,.dash-row-3{grid-template-columns:1fr}.brands-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.nav{padding:14px 20px}.stats-section,.dash-wrap,.brands-section,.nl-section{padding-left:20px;padding-right:20px}.nl-box{grid-template-columns:1fr;padding:32px 24px;gap:28px}footer{padding:24px 20px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ── DATA ──────────────────────────────────────────────
+const PLATFORMS = [
+  { name:'YouTube',   handle:'@Bklynsdon', color:'#FF0000', url:'https://youtube.com/@Bklynsdon',
+    icon:<svg width="18" height="13" viewBox="0 0 24 18" fill="white"><path d="M23 2.7A3 3 0 0 0 20.8.5C19 0 12 0 12 0S5 0 3.2.5A3 3 0 0 0 1 2.7 31 31 0 0 0 .5 9a31 31 0 0 0 .5 6.3A3 3 0 0 0 3.2 17.5C5 18 12 18 12 18s7 0 8.8-.5A3 3 0 0 0 23 15.3 31 31 0 0 0 23.5 9 31 31 0 0 0 23 2.7zM9.7 12.9V5.1L15.9 9l-6.2 3.9z"/></svg> },
+  { name:'Kick',      handle:'Bklynsdon',  color:'#53FC18', url:'https://kick.com/Bklynsdon',
+    icon:<svg width="16" height="16" viewBox="0 0 22 22" fill="black"><text x="2" y="17" fontFamily="'Space Grotesk'" fontWeight="900" fontSize="16">K</text></svg> },
+  { name:'Twitch',    handle:'Bklynsdon',  color:'#9146FF', url:'https://twitch.tv/Bklynsdon',
+    icon:<svg width="15" height="17" viewBox="0 0 18 20" fill="white"><path d="M1 0L0 4v12h5v3l3-3h4l5-5V0H1zm14 10l-4 4H7l-3 3v-3H2V2h13v8z"/><rect x="10" y="5" width="2" height="5" fill="white"/><rect x="6" y="5" width="2" height="5" fill="white"/></svg> },
+  { name:'Instagram', handle:'@Bklynsdon', color:'url(#ig)', url:'https://instagram.com/Bklynsdon',
+    icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 3.3.2 4.8 1.7 5 5 .1 1.3.1 1.6.1 4.8 0 3.2 0 3.6-.1 4.8-.2 3.3-1.7 4.8-5 5-1.3.1-1.6.1-4.9.1-3.2 0-3.6 0-4.8-.1-3.3-.2-4.8-1.7-5-5C2.1 15.6 2 15.2 2 12c0-3.2 0-3.6.1-4.8.2-3.3 1.7-4.8 5-5C8.4 2.2 8.8 2.2 12 2.2zm0-2.2C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12c0 3.3 0 3.7.1 4.9.2 4.4 2.6 6.8 7 7C8.3 24 8.7 24 12 24c3.3 0 3.7 0 4.9-.1 4.4-.2 6.8-2.6 7-7C24 15.7 24 15.3 24 12c0-3.3 0-3.7-.1-4.9-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4A6.2 6.2 0 0 0 12 5.8zm0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg> },
+  { name:'TikTok',    handle:'@Bklynsdon', color:'#010101', url:'https://tiktok.com/@Bklynsdon',
+    icon:<svg width="14" height="16" viewBox="0 0 18 20" fill="white"><path d="M16 3.5A4.5 4.5 0 0 1 11.5 0h-3v13.7a2.3 2.3 0 1 1-2.3-2.3c.2 0 .4 0 .6.1V8.1A6.1 6.1 0 0 0 6.2 8a6.2 6.2 0 1 0 6.2 6.2V7.2A8.3 8.3 0 0 0 16 7.5V3.5z"/></svg> },
+  { name:'Twitter/X', handle:'@Bklynsdon', color:'#000',    url:'https://twitter.com/Bklynsdon',
+    icon:<svg width="15" height="14" viewBox="0 0 20 18" fill="white"><path d="M15.9.5h3.1L12.3 7.8 20 17.5h-6.5L9 11.5l-5.4 6H.5l7.2-7.8L0 .5h6.7l4.1 5.4L15.9.5zm-1.1 15.3h1.7L5.3 2.2H3.5L14.8 15.8z"/></svg> },
+];
+
+const CENTRO_NEWS = [
+  { headline:'🔴 LEAK: Pokémon Legends Z-A — new Mega Evolutions confirmed for all 3 starters', time:'42m ago', tag:'LEAK' },
+  { headline:'Gen 10 regional forms concept art surfaces from alleged internal document', time:'2h ago', tag:'RUMOR' },
+  { headline:'Pokémon GO × Legends Z-A crossover event details emerge — new shiny pool', time:'4h ago', tag:'EVENT' },
+  { headline:'Switch 2 Pokémon performance specs allegedly revealed — 60fps confirmed', time:'7h ago', tag:'HARDWARE' },
+  { headline:'Temporal Forces 2 card set — 3 new Tera Pokémon cards leaked ahead of reveal', time:'11h ago', tag:'TCG' },
+  { headline:'Ash returns? New animated series concept art circulating on Japanese boards', time:'1d ago', tag:'ANIME' },
+  { headline:'Pokémon Sleep 2.0 update includes real-time tracking and new regional forms', time:'1d ago', tag:'MOBILE' },
+];
+const VERGE_NEWS = [
+  { headline:'Apple M5 MacBook Pro hands-on: the biggest generational leap yet', time:'1h ago', tag:'APPLE' },
+  { headline:'Samsung\'s T9 SSD gets a surprise 40% price cut — here\'s why', time:'3h ago', tag:'STORAGE' },
+  { headline:'Ugreen\'s new 300W GaN charging station is the desktop hub we\'ve been waiting for', time:'5h ago', tag:'ACCESSORIES' },
+  { headline:'Logitech announces AI-native keyboard with dedicated shortcut key for Claude', time:'8h ago', tag:'KEYBOARDS' },
+  { headline:'Nintendo Switch 2 sells 4 million units in its first week globally', time:'10h ago', tag:'GAMING' },
+  { headline:'Apple\'s new CarPlay Ultra rolls out to 14 automakers this spring', time:'14h ago', tag:'APPLE' },
+  { headline:'The best SSDs of 2026: Samsung, Ugreen and WD go head to head', time:'1d ago', tag:'REVIEW' },
+];
+
+const CHIPS = [
+  '🎙️ Best mic for tech reviews?',
+  '📱 Apple vs Samsung — what to cover?',
+  '🎮 Nintendo Switch 2 content ideas',
+  '📈 Growing on Kick in 2026',
+  '⌨️ Top gear for creators',
+  '🃏 Pokémon TCG content strategy',
+];
+
+const logoImg = (src, alt, w=130, h=56) => (
+  <img src={src} alt={alt} style={{width:w, height:h, objectFit:'contain'}} />
+);
+
+const BRANDS = [
+  { name:'Apple', desc:'Full ecosystem coverage', size:'xl',
+    logo: logoImg('uploads/processed/apple.png', 'Apple', 80, 80) },
+  { name:'Samsung', desc:'Smartphones & Galaxy ecosystem', size:'lg',
+    logo: logoImg('uploads/processed/samsung.png', 'Samsung', 130, 60) },
+  { name:'Ugreen', desc:'Chargers, hubs & cables', size:'md',
+    logo: logoImg('uploads/processed/ugreen.png', 'Ugreen', 90, 52) },
+  { name:'Logitech', desc:'Keyboards, mice & peripherals', size:'md',
+    logo: <img src="uploads/Logitech Logo.png" alt="Logitech" style={{width:140, height:52, objectFit:'contain', filter:'brightness(0) invert(1)'}} /> },
+  { name:'Nintendo', desc:'Switch, games & culture', size:'md',
+    logo: logoImg('uploads/processed/nintendo.png', 'Nintendo', 110, 52) },
+  { name:'Pokémon', desc:'TCG, games & collectibles', size:'md',
+    logo: logoImg('uploads/processed/pokemon.png', 'Pokémon', 110, 52) },
+  { name:'Kick', desc:'Live streaming & drops', size:'md',
+    logo: logoImg('uploads/processed/kick.png', 'Kick', 120, 52) },
+  { name:'Twitch', desc:'Streams & community', size:'md',
+    logo:<svg width="40" height="46" viewBox="0 0 38 44" fill="#9146FF"><path d="M2 0L0 10v28h10v6l6-6h8l12-12V0H2zm32 24l-8 8h-8l-6 6v-6H4V4h30v20z"/><rect x="22" y="10" width="4" height="12" fill="#9146FF"/><rect x="14" y="10" width="4" height="12" fill="#9146FF"/></svg> },
+];
+
+// ── COMPONENTS ────────────────────────────────────────
+
+function Nav() {
+  return (
+    <nav className="nav">
+      <a className="nav-logo" href="#">Bklyn<span>sdon</span></a>
+      <ul className="nav-links">
+        <li><a href="#platforms">Stats</a></li>
+        <li><a href="#assistant">AI Assistant</a></li>
+        <li><a href="#video">Latest</a></li>
+        <li><a href="#brands">Brands</a></li>
+        <li><a href="#newsletter">Newsletter</a></li>
+      </ul>
+      <a className="nav-cta" href="https://youtube.com/@Bklynsdon" target="_blank" rel="noopener">Subscribe ↗</a>
+    </nav>
+  );
+}
+
+function Hero() {
+  return (
+    <div className="hero">
+      <div className="hero-glow" />
+      <div className="hero-badge anim-1">Tech Reviews &amp; Content Creation · Brooklyn, NY</div>
+      <h1 className="hero-title anim-2">BKLYNS<span className="blue">DON</span></h1>
+      <p className="hero-sub anim-3">Honest, in-depth tech reviews covering Apple, Samsung, Ugreen, Logitech and more — straight from Brooklyn.</p>
+      <div className="hero-actions anim-4">
+        <a className="btn-primary" href="https://youtube.com/@Bklynsdon" target="_blank" rel="noopener">
+          <svg width="16" height="12" viewBox="0 0 24 18" fill="white"><path d="M23 2.7A3 3 0 0 0 20.8.5C19 0 12 0 12 0S5 0 3.2.5A3 3 0 0 0 1 2.7 31 31 0 0 0 .5 9a31 31 0 0 0 .5 6.3A3 3 0 0 0 3.2 17.5C5 18 12 18 12 18s7 0 8.8-.5A3 3 0 0 0 23 15.3 31 31 0 0 0 23.5 9 31 31 0 0 0 23 2.7zM9.7 12.9V5.1L15.9 9l-6.2 3.9z"/></svg>
+          Subscribe on YouTube
+        </a>
+        <a className="btn-ghost" href="#assistant">Chat with AI ↓</a>
+      </div>
+      <div className="hero-scroll"><div className="scroll-line" />scroll</div>
+    </div>
+  );
+}
+
+function Ticker() {
+  const items = ['Apple','Samsung','Ugreen','Logitech','Nintendo','Pokémon','Kick','Twitch'];
+  return (
+    <div className="ticker">
+      <div className="ticker-track">
+        {[...items,...items].map((t,i) => <div key={i} className="ticker-item">{t}</div>)}
+      </div>
+    </div>
+  );
+}
+
+function PlatformStats() {
+  return (
+    <div className="stats-section" id="platforms">
+      <div className="section-label">Social Ecosystem</div>
+      <h2 className="section-title">Find me everywhere</h2>
+      <div className="stats-grid">
+        {PLATFORMS.map(p => (
+          <a key={p.name} className="stat-card" href={p.url} target="_blank" rel="noopener" style={{textDecoration:'none'}}>
+            <div className="stat-platform">
+              <div className="stat-icon" style={{background: p.name==='Instagram' ? 'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)' : p.name==='TikTok'||p.name==='Twitter/X' ? '#111' : p.color, border: (p.name==='TikTok'||p.name==='Twitter/X') ? '1px solid rgba(255,255,255,0.1)' : 'none'}}>
+                {p.icon}
+              </div>
+              <span className="stat-name">{p.name}</span>
+            </div>
+            <div className="stat-label">{p.handle}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AIChat() {
+  const SYSTEM = `You are a helpful content creation AI assistant for Bklynsdon, a Brooklyn-based tech YouTuber and streamer who reviews Apple, Samsung, Ugreen, Logitech, Nintendo, and Pokémon products. You provide specific, actionable tips about content creation, tech trends, and growing on platforms like YouTube, Kick, Twitch, TikTok, and Instagram. Be concise (2-4 sentences), friendly, and knowledgeable. Always ask a relevant follow-up question to keep the conversation going.`;
+  const [msgs, setMsgs] = useState([
+    { role:'ai', text:"Hey! I'm your content creation AI. Ask me about tech trends, review ideas, or how to grow your channel. What are you working on? 🎬", time:'just now' }
+  ]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const endRef = useRef(null);
+
+  useEffect(() => { endRef.current?.parentElement && (endRef.current.parentElement.scrollTop = endRef.current.parentElement.scrollHeight); }, [msgs, loading]);
+
+  const send = async (text) => {
+    if (!text.trim() || loading) return;
+    const userMsg = { role:'user', text, time:'just now' };
+    setMsgs(m => [...m, userMsg]);
+    setInput('');
+    setLoading(true);
+    try {
+      const history = [...msgs, userMsg].map(m => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.text }));
+      const allMsgs = [{ role:'user', content: SYSTEM + '\n\n' + history[0].content }, ...history.slice(1)];
+      const reply = await window.claude.complete({ messages: allMsgs });
+      setMsgs(m => [...m, { role:'ai', text: reply, time:'just now' }]);
+    } catch(e) {
+      setMsgs(m => [...m, { role:'ai', text:'Sorry, having trouble connecting. Try again in a moment!', time:'just now' }]);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="panel" id="assistant">
+      <div className="panel-header">
+        <div className="panel-title"><div className="live-dot" />AI Content Assistant</div>
+        <span style={{fontSize:'.7rem',color:'var(--muted)'}}>Powered by Claude</span>
+      </div>
+      <div className="chat-messages">
+        {msgs.map((m, i) => (
+          <div key={i} className={`chat-msg ${m.role}`}>
+            <div className="chat-bubble">{m.text}</div>
+            <span className="chat-meta">{m.role === 'ai' ? 'AI Assistant' : 'You'} · {m.time}</span>
+          </div>
+        ))}
+        {loading && (
+          <div className="chat-msg ai">
+            <div className="chat-bubble" style={{padding:'6px 14px'}}>
+              <div className="typing"><span/><span/><span/></div>
+            </div>
+          </div>
+        )}
+        <div ref={endRef} />
+      </div>
+      <div className="chat-chips">
+        {CHIPS.map(c => <button key={c} className="chip" onClick={() => send(c)}>{c}</button>)}
+      </div>
+      <div className="chat-input-row">
+        <input className="chat-input" placeholder="Ask about content creation, tech trends..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key==='Enter' && send(input)} />
+        <button className="chat-send" onClick={() => send(input)} disabled={loading || !input.trim()}>Send</button>
+      </div>
+    </div>
+  );
+}
+
+function NewsFeed({ title, items, source, color }) {
+  const [feed, setFeed] = useState(items);
+  const [refreshed, setRefreshed] = useState(false);
+  const refresh = () => { setFeed([...feed].reverse()); setRefreshed(true); setTimeout(() => setRefreshed(false), 1500); };
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <div className="panel-title"><div className="live-dot" style={{background:color,boxShadow:`0 0 6px ${color}`}} />{title}</div>
+        <button className="panel-action" onClick={refresh}>{refreshed ? '✓ Updated' : '↻ Refresh'}</button>
+      </div>
+      <div style={{padding:'6px 24px 8px',fontSize:'.68rem',color:'var(--muted)'}}>Source: <a href={source} target="_blank" rel="noopener" style={{color:'var(--accent)',textDecoration:'underline'}}>{source}</a></div>
+      <div className="news-list">
+        {feed.map((n, i) => (
+          <div key={i} className="news-item">
+            <div className="news-headline">{n.headline}</div>
+            <div className="news-meta">
+              <span className="news-tag" style={{color:color}}>{n.tag}</span>
+              <span>{n.time}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FeaturedVideo() {
+  return (
+    <div className="panel" id="video">
+      <div className="video-card">
+        <div style={{marginBottom:16}}>
+          <div className="section-label">Latest Drop</div>
+          <h3 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:'1.1rem',fontWeight:700,letterSpacing:'-.02em'}}>Watch the newest review</h3>
+        </div>
+        <a className="video-thumb" href="https://youtube.com/@Bklynsdon/videos" target="_blank" rel="noopener">
+          <svg className="video-thumb-bg" style={{position:'absolute',inset:0,width:'100%',height:'100%'}} xmlns="http://www.w3.org/2000/svg">
+            <defs><pattern id="vd" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="24" fill="white"/></pattern></defs>
+            <rect width="100%" height="100%" fill="url(#vd)"/>
+          </svg>
+          <div className="play-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white" style={{marginLeft:3}}><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div style={{position:'absolute',bottom:16,left:16,right:16,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <span style={{fontSize:'.72rem',color:'rgba(240,240,240,.6)',background:'rgba(0,0,0,.5)',padding:'4px 10px',borderRadius:6}}>youtube.com/@Bklynsdon</span>
+            <span style={{fontSize:'.72rem',color:'white',background:'#FF0000',padding:'3px 9px',borderRadius:5,fontWeight:600}}>LATEST</span>
+          </div>
+        </a>
+        <div className="video-info">
+          <div className="video-title">Click to watch the latest upload →</div>
+          <div className="video-sub">New reviews drop weekly · Subscribe so you never miss one</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BrandGrid() {
+  return (
+    <div className="brands-section" id="brands">
+      <div className="section-label">Brand Partnerships</div>
+      <h2 className="section-title">Top brands. Real opinions.</h2>
+      <p className="section-desc">No paid scripts. Just deep dives into the products worth talking about.</p>
+      <div className="brands-grid">
+        {BRANDS.map(b => (
+          <div key={b.name} className="brand-card">
+            <div style={{height: b.size==='xl' ? 68 : b.size==='lg' ? 52 : 44, display:'flex', alignItems:'center', justifyContent:'center'}}>{b.logo}</div>
+            <div className="brand-name">{b.name}</div>
+            <div className="brand-desc">{b.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Newsletter() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('');
+  const submit = () => {
+    if (!name || !email.includes('@')) { setStatus('error'); return; }
+    setStatus('success');
+  };
+  return (
+    <div className="nl-section" id="newsletter">
+      <div className="nl-box">
+        <div>
+          <div className="section-label">Newsletter</div>
+          <h2 className="section-title" style={{fontSize:'clamp(1.4rem,2.5vw,2.2rem)'}}>Stay in the loop</h2>
+          <p className="section-desc" style={{marginTop:10}}>Get early access to reviews, exclusive deals and behind-the-scenes content — straight to your inbox.</p>
+        </div>
+        <div className="nl-form">
+          {status==='success' ? (
+            <div style={{textAlign:'center',padding:'24px 0'}}>
+              <div style={{fontSize:'1.8rem',marginBottom:8}}>✓</div>
+              <div style={{fontFamily:"'Space Grotesk',sans-serif",fontWeight:600}}>You're on the list!</div>
+              <div style={{fontSize:'.8rem',color:'var(--muted)',marginTop:4}}>Thanks {name}! First to know, always.</div>
+            </div>
+          ) : (
+            <>
+              <input className="nl-input" placeholder="Your name" value={name} onChange={e => setName(e.target.value)} />
+              <input className="nl-input" type="email" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} />
+              <button className="nl-btn" onClick={submit}>Subscribe →</button>
+              {status==='error' && <p style={{fontSize:'.73rem',color:'#ff6b6b',textAlign:'center'}}>Please enter your name and a valid email.</p>}
+              <p className="nl-note">No spam, ever. Unsubscribe anytime.</p>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer>
+      <div className="footer-logo">Bklyn<span>sdon</span></div>
+      <div className="footer-links">
+        <a href="https://youtube.com/@Bklynsdon" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://kick.com/Bklynsdon" target="_blank" rel="noopener">Kick</a>
+        <a href="https://twitch.tv/Bklynsdon" target="_blank" rel="noopener">Twitch</a>
+        <a href="https://instagram.com/Bklynsdon" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://tiktok.com/@Bklynsdon" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://twitter.com/Bklynsdon" target="_blank" rel="noopener">Twitter/X</a>
+        <a href="mailto:Bklynsdon718@gmail.com">Bklynsdon718@gmail.com</a>
+      </div>
+      <div className="footer-copy">© 2026 Bklynsdon. All rights reserved.</div>
+    </footer>
+  );
+}
+
+function TweaksPanel() {
+  return (
+    <div id="tweaks-panel">
+      <h4>Tweaks</h4>
+      <div className="tweak-row">
+        <label>Accent Color</label>
+        <input type="color" defaultValue="#4d8cff" onChange={e => document.documentElement.style.setProperty('--accent', e.target.value)} />
+      </div>
+      <div className="tweak-row">
+        <label>Background</label>
+        <select onChange={e => document.documentElement.style.setProperty('--bg', e.target.value)}>
+          <option value="#080808">Near Black</option>
+          <option value="#050510">Deep Navy</option>
+          <option value="#080805">Warm Black</option>
+          <option value="#0a0a12">Midnight Blue</option>
+        </select>
+      </div>
+      <div className="tweak-row">
+        <label>Panel Style</label>
+        <select onChange={e => {
+          const v = e.target.value;
+          document.documentElement.style.setProperty('--bg2', v==='flat' ? '#0a0a0a' : v==='glass' ? 'rgba(255,255,255,0.03)' : '#0f0f0f');
+        }}>
+          <option value="default">Default</option>
+          <option value="flat">Flat</option>
+          <option value="glass">Glass</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  useEffect(() => {
+    window.addEventListener('message', e => {
+      if (e.data?.type === '__activate_edit_mode') document.getElementById('tweaks-panel').classList.add('open');
+      if (e.data?.type === '__deactivate_edit_mode') document.getElementById('tweaks-panel').classList.remove('open');
+    });
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+  }, []);
+
+  return (
+    <>
+      <Nav />
+      <Hero />
+      <Ticker />
+      <PlatformStats />
+      <div className="dash-wrap">
+        {/* AI Chat + News */}
+        <div className="dash-row dash-row-2" id="assistant" style={{alignItems:'start'}}>
+          <AIChat />
+          <div style={{display:'flex',flexDirection:'column',gap:16}}>
+            <NewsFeed title="CentroLeaks" items={CENTRO_NEWS} source="https://x.com/CentroLeaks" color="#FFCB05" />
+          </div>
+        </div>
+        {/* Video + Verge */}
+        <div className="dash-row dash-row-2" style={{alignItems:'start'}}>
+          <FeaturedVideo />
+          <NewsFeed title="Tech News" items={VERGE_NEWS} source="https://www.theverge.com" color="#4d8cff" />
+        </div>
+      </div>
+      <BrandGrid />
+      <Newsletter />
+      <Footer />
+      <TweaksPanel />
+    </>
+  );
+}
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "#4d8cff",
+  "background": "#080808"
+}/*EDITMODE-END*/;
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
